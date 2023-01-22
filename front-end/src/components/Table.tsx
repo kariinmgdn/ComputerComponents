@@ -1,9 +1,8 @@
 import React from "react";
-import { Table, Divider, Button } from "antd";
+import { Table, Divider, Button, Popconfirm } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { deleteComponent } from "@/lib";
-import { RefreshData } from "./RefreshData";
-import SelectStatusForm from "./SelectStatus";
+import { useRouter } from "next/router";
 
 interface DataType {
   id: number;
@@ -14,23 +13,28 @@ interface DataType {
   time: Date;
 }
 
-export function DeleteButton(id: number) {
-  const refreshData = RefreshData();
+export function DeleteButton(props: { id: number }) {
+  const router = useRouter();
+
+  const refreshData = () => router.replace(router.asPath);
+
   return (
-    <Button
-      className="btn"
-      onClick={async () => {
-        const conf = confirm(`Vai tiešām vēlaties dzēst pieprasījumu?`);
-        if (conf) {
-          const response = await deleteComponent(id);
+    <>
+      <Popconfirm
+        title="Pieprasījuma dzēšana"
+        description="Vai tiešām vēlaties izdzēst šo pieprasījumu?"
+        onConfirm={async () => {
+          const response = await deleteComponent(props.id);
           if (response.status < 300) {
             refreshData();
           }
-        }
-      }}
-    >
-      Dzēst
-    </Button>
+        }}
+        okText="Jā"
+        cancelText="Nē"
+      >
+        <Button href="#">Dzēst</Button>
+      </Popconfirm>
+    </>
   );
 }
 
@@ -65,14 +69,14 @@ const columns: ColumnsType<DataType> = [
     key: "operation",
     fixed: "right",
     width: 100,
-    render: (record: { id: number }) => DeleteButton(record.id),
+    render: (record: { id: number }) => <DeleteButton id={record.id} />,
   },
 ];
 
-const ComponentTable = (data: DataType[]) => (
+const ComponentTable = (props: { data: DataType[] }) => (
   <>
     <Divider>Visi Pieprasījumi</Divider>
-    <Table columns={columns} dataSource={data} size="middle" />
+    <Table columns={columns} dataSource={props.data} size="middle" />
   </>
 );
 

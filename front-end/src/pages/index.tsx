@@ -4,6 +4,7 @@ import { formatData } from "@/lib/FormatData";
 import SelectStatusForm from "@/components/SelectStatus";
 import ComponentTable from "@/components/Table";
 import { ModalComponent } from "@/components/ModalComponent";
+import { Typography } from "antd";
 
 export async function getStaticProps() {
   const components = await getComponentList();
@@ -26,20 +27,30 @@ interface Props {
   }[];
 }
 
+const { Title } = Typography;
+
 export default function Home(props: Props) {
   return (
     <>
       <div className="component-section">
-        <h2 className="title">Datortehnikas pieprasīšanas sistēma</h2>
+        <Title className="title">Datortehnikas pieprasīšanas sistēma</Title>
         <div className="component-container">
           <div className="input-conatiner">
             <div className="item">
-              {ModalComponent("Izveidot pieprasījumu", InputForm())}
-              {ModalComponent("Mainīt statusu", SelectStatusForm())}
+              <ModalComponent
+                name={"Izveidot pieprasījumu"}
+                input={<InputForm />}
+              />
+              <ModalComponent
+                name={"Mainīt statusu"}
+                input={<SelectStatusForm />}
+              />
             </div>
           </div>
           <div>
-            <div>{ComponentTable(props.components)}</div>
+            <div>
+              <ComponentTable data={props.components} />
+            </div>
           </div>
         </div>
       </div>

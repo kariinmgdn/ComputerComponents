@@ -2,17 +2,19 @@ import { changeStatus } from "@/lib";
 import { useState } from "react";
 import React from "react";
 import { Button, Form, Input, Select } from "antd";
-import { RefreshData } from "./RefreshData";
+import { Typography } from "antd";
+import { useRouter } from "next/router";
 
 interface Option {
   value: string;
   label: string;
 }
-
+const { Title } = Typography;
 const { Option } = Select;
 
 const SelectStatusForm = () => {
-  const refreshData = RefreshData();
+  const router = useRouter();
+  const refreshData = () => router.replace(router.asPath);
 
   const options = ["Izveidots", "Apstiprināts", "Noraidīts"];
 
@@ -20,11 +22,9 @@ const SelectStatusForm = () => {
   const [status, setStatus] = useState("");
   return (
     <>
-      <h2 className="title2">Statusa atjaunošana:</h2>
+      <Title level={4}>Statusa atjaunošana:</Title>
       <Form.Item name="id">
-        <label>
-          Pieprasījuma ID:
-        </label>
+        <label>Pieprasījuma ID:</label>
         <Input
           value={id}
           onChange={(e) => setId(e.target.value)}
@@ -32,13 +32,8 @@ const SelectStatusForm = () => {
         />
       </Form.Item>
       <Form.Item name="status">
-        <label>
-          Statuss:
-        </label>
-        <Select
-          value={status}
-          onChange={(value) => setStatus(value)}
-        >
+        <label>Statuss:</label>
+        <Select value={status} onChange={(value) => setStatus(value)}>
           {options.map((component: string) => (
             <Option key={component} value={component}>
               {component}
@@ -47,7 +42,6 @@ const SelectStatusForm = () => {
         </Select>
       </Form.Item>
       <Button
-      className="btn"
         onClick={async () => {
           const response = await changeStatus(id, status);
           if (response.status < 300) {
@@ -55,7 +49,6 @@ const SelectStatusForm = () => {
             setId("");
             setStatus("");
             refreshData();
-            
           }
         }}
       >
