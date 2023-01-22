@@ -1,7 +1,9 @@
-package com.example.backend.computercomponents.controller;
+package com.example.backend.controller;
 
-import com.example.backend.computercomponents.dto.Component;
-import com.example.backend.computercomponents.service.ComponentService;
+import com.example.backend.domain.Component;
+import com.example.backend.domain.Status;
+import com.example.backend.dto.AddComponentRequest;
+import com.example.backend.service.ComponentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
-public class ComponentControllerTest {
+class ComponentControllerTest {
 
     @Mock
     ComponentService service;
@@ -23,27 +25,30 @@ public class ComponentControllerTest {
     ComponentController controller;
 
 
-    private final Component component =
-            new Component("Monitors", "24 collas", "Nomainīt uz jaunāku");
+    private final AddComponentRequest addComponentRequest =
+            new AddComponentRequest("Monitors", "24 collas", "Nomainīt uz jaunāku");
+    private final Component newComponent = new Component(addComponentRequest.name(),
+            addComponentRequest.parameters(), addComponentRequest.reason());
 
     @Test
     void testAddComponent() {
-        Component newComponent = component;
-        Mockito.doAnswer(invocationOnMock -> newComponent).when(service).addComponent(component);
-        Component result = controller.addComponent(component);
+
+        Mockito.doAnswer(invocationOnMock -> newComponent).when(service).addComponent(addComponentRequest);
+        Component result = controller.addComponent(addComponentRequest);
 
         Component expected = new Component(newComponent.getId(), "Monitors", "24 collas",
-                "Nomainīt uz jaunāku", "Izveidots",
+                "Nomainīt uz jaunāku", Status.CREATED,
                 newComponent.getTime());
         Assertions.assertEquals(expected.toString(), result.toString());
     }
 
     @Test
     void testGetComponentList() {
+
         Component first = new Component(1L, "Monitors", "24 collas",
-                component.getReason(), component.getStatus(), component.getTime());
+                addComponentRequest.reason(), newComponent.getStatus(), newComponent.getTime());
         Component second = new Component(2L, "Monitors", "24 collas",
-                component.getReason(), component.getStatus(), component.getTime());
+                addComponentRequest.reason(), newComponent.getStatus(), newComponent.getTime());
 
         List<Component> result = new ArrayList<>();
 
@@ -57,14 +62,13 @@ public class ComponentControllerTest {
 
     @Test
     void testChangeStatus() {
-        Component newComponent = component;
-        newComponent.setStatus("Apstiprināts");
+        newComponent.setStatus(Status.APPROVED);
 
-        Mockito.doAnswer(invocation -> newComponent).when(service).changeStatus(component.getId(), "Apstiprināts");
-        Component result = controller.changeStatus(component.getId(), "Apstiprināts");
+        Mockito.doAnswer(invocation -> newComponent).when(service).changeStatus(newComponent.getId(), "Apstiprināts");
+        Component result = controller.changeStatus(newComponent.getId(), "Apstiprināts");
 
         Component expected = new Component(newComponent.getId(), "Monitors", "24 collas",
-                "Nomainīt uz jaunāku", "Apstiprināts",
+                "Nomainīt uz jaunāku", Status.APPROVED,
                 newComponent.getTime());
 
         Assertions.assertEquals(expected.toString(), result.toString());
@@ -72,13 +76,14 @@ public class ComponentControllerTest {
 
     @Test
     void testDeleteComponent() {
-        Component newComponent = new Component(1L, "Monitors", "24 collas",
-                component.getReason(), component.getStatus(), component.getTime());
-        List<Component> components = new ArrayList<>();
-        components.add(component);
-        components.add(newComponent);
+        Component component = new Component(1L, newComponent.getName(), newComponent.getParameters(),
+                newComponent.getReason(), newComponent.getStatus(), newComponent.getTime());
 
-        Mockito.doAnswer(invocation -> components.remove(newComponent)).when(service).deleteComponent(1L);
+        List<Component> components = new ArrayList<>();
+        components.add(newComponent);
+        components.add(component);
+
+        Mockito.doAnswer(invocation -> components.remove(component)).when(service).deleteComponent(1L);
         controller.deleteComponent(1L);
 
         Mockito.doAnswer(invocation -> components).when(service).getComponentList();

@@ -1,15 +1,17 @@
-package com.example.backend.computercomponents.controller;
+package com.example.backend.controller;
 
-import com.example.backend.computercomponents.dto.Component;
-import com.example.backend.computercomponents.service.ComponentService;
+import com.example.backend.domain.Component;
+import com.example.backend.dto.AddComponentRequest;
+import com.example.backend.service.ComponentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/components")
-public class ComponentController {
+class ComponentController {
 
     private final ComponentService service;
 
@@ -18,8 +20,8 @@ public class ComponentController {
     }
 
     @PostMapping("/")
-    public Component addComponent(@RequestBody @Valid Component component) {
-        return service.addComponent(component);
+    public Component addComponent(@RequestBody @Valid AddComponentRequest addComponentRequest) {
+        return service.addComponent(addComponentRequest);
     }
 
     @GetMapping("/")
@@ -28,7 +30,7 @@ public class ComponentController {
     }
 
     @PutMapping("/{id}")
-    public Component changeStatus(@PathVariable long id, @RequestBody String status) {
+    public Component changeStatus(@PathVariable long id, @RequestBody @NotBlank String status) {
         return service.changeStatus(id, status);
     }
 

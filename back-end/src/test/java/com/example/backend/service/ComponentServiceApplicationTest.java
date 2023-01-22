@@ -1,6 +1,8 @@
-package com.example.backend.computercomponents.service;
+package com.example.backend.service;
 
-import com.example.backend.computercomponents.dto.Component;
+import com.example.backend.domain.Component;
+import com.example.backend.domain.Status;
+import com.example.backend.dto.AddComponentRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class ComponentServiceApplicationTest {
+class ComponentServiceApplicationTest {
 
     @Autowired
     private ComponentService service;
@@ -18,14 +20,14 @@ public class ComponentServiceApplicationTest {
         service.clear();
     }
 
-    private final Component component =
-            new Component("Monitors", "24 collas", "Nomainīt uz jaunāku");
+    private final AddComponentRequest component =
+            new AddComponentRequest("Monitors", "24 collas", "Nomainīt uz jaunāku");
 
     @Test
     void testAddComponent() {
         Component newComponent = service.addComponent(component);
         Component result = new Component(newComponent.getId(), "Monitors", "24 collas",
-                "Nomainīt uz jaunāku", "Izveidots",
+                "Nomainīt uz jaunāku", Status.CREATED,
                 newComponent.getTime());
         Assertions.assertEquals(result.toString(), newComponent.toString());
     }
@@ -43,11 +45,11 @@ public class ComponentServiceApplicationTest {
     void testChangeStatus() {
         Component newComponent = service.addComponent(component);
         Component result = new Component(newComponent.getId(), "Monitors", "24 collas",
-                "Nomainīt uz jaunāku", "Apstiprināts",
+                "Nomainīt uz jaunāku", Status.APPROVED,
                 newComponent.getTime());
 
-        Assertions.assertEquals(result.toString(),
-                service.changeStatus(newComponent.getId(), "Apstiprināts").toString());
+        Assertions.assertEquals(result.getStatus(),
+                service.changeStatus(newComponent.getId(), "Apstiprināts").getStatus());
     }
 
     @Test

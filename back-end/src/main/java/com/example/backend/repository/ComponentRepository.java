@@ -1,6 +1,6 @@
-package com.example.backend.computercomponents.repository;
+package com.example.backend.repository;
 
-import com.example.backend.computercomponents.dto.Component;
+import com.example.backend.domain.Component;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
