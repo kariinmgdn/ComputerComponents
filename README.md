@@ -18,11 +18,9 @@ Or if you’re working in a Linux/Mac environment, it’s this.
 ```
 To build the front-end part of this project, go to the front-end package and run the following commands.
 ```
-next build
+npm run dev
 
 npm install antd
-
-npm run dev
 ```
 Lastly, you will need to create a Docker container. Run those in command prompt
 ```
